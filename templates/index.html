@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Rankings</title>
+    <style>
+        :root {
+            --primary-color: #8B7355; /* Brown */
+            --secondary-color: #D2B48C; /* Tan */
+            --accent-color: #F5F5DC; /* Beige */
+            --text-color: #5D4037; /* Dark Brown */
+            --background-color: #FFF8E1; /* Cream */
+            --border-color: #D7CCC8; /* Light Brown */
+        }
+        
+        body { 
+            font-family: 'Georgia', serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin: 0;
+        }
+        
+        .course-selector {
+            background-color: var(--accent-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        form { 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        select { 
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 1rem;
+            min-width: 250px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #6D4C41;
+        }
+        
+        .content-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .rankings-section, .visualization-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        h2, h3 {
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        li {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        li:last-child {
+            border-bottom: none;
+        }
+        
+        .rank-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .university-info {
+            flex: 1;
+        }
+        
+        .university-name {
+            font-weight: bold;
+        }
+        
+        .university-country {
+            font-size: 0.9rem;
+            color: #7D6E83;
+        }
+        
+        img { 
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px 0;
+            color: #9E9E9E;
+        }
+        
+        @media (max-width: 768px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>University Rankings</h1>
+        </header>
+        
+        <div class="course-selector">
+            <form method="POST">
+                <label for="course">Select a course:</label>
+                <select name="course" id="course">
+                    {% for key, (name, _) in courses.items() %}
+                        <option value="{{ key }}" {% if selected_course == name %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Get Rankings</button>
+            </form>
+        </div>
+
+        {% if selected_course %}
+            <div class="content-wrapper">
+                <div class="rankings-section">
+                    <h2>Top Universities for {{ selected_course }}</h2>
+                    <ul>
+                        {% for uni in rankings %}
+                            <li>
+                                <span class="rank-number">{{ uni.Rank }}</span>
+                                <div class="university-info">
+                                    <div class="university-name">{{ uni.University }}</div>
+                                    <div class="university-country">{{ uni.Country }}</div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="visualization-section">
+                    <h3>Ranking Visualization</h3>
+                    {% if graph_path %}
+                        <img src="{{ graph_path }}" alt="Ranking Chart">
+                    {% else %}
+                        <div class="no-data">No visualization available</div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="no-data">
+                <p>Select a course to view university rankings</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
+
